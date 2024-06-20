@@ -7,26 +7,26 @@ import { MaterialIcons } from '@expo/vector-icons';
 import Slider from '@react-native-community/slider';
 
 const statusBarHeight = StatusBar.currentHeight;
-const KEY_GPT = 'sk-proj-9JjboNGiLqEIWQC5aU2lT3BlbkFJeGLjDrOOn7gI5bMMrsxC';
+const KEY_GPT = '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'; 
 
 export default function App() {
 
-  const [city, setCity] = useState("");
-  const [days, setDays] = useState(3);
+  const [genero, setGenero] = useState("");
+  const [idade, setIdade] = useState(10);
   const [loading, setLoading] = useState(false);
-  const [travel, setTravel] = useState("")
+  const [jogo, setJogo] = useState("")
 
   async function handleGenerate() {
-    if (city === "") {
+    if (genero === "") {
       Alert.alert("Atenção", "Preencha o nome da cidade!")
       return;
     }
 
-    setTravel("")
+    setJogo("")
     setLoading(true);
     Keyboard.dismiss();
 
-    const prompt = `Crie um roteiro para uma viagem de exatos ${days.toFixed(0)} dias na cidade de ${city}, busque por lugares turisticos, lugares mais visitados, seja preciso nos dias de estadia fornecidos e limite o roteiro apenas na cidade fornecida. Forneça apenas em tópicos com nome do local onde ir em cada dia.`
+    const prompt = `Faça uma recomendação de jogo de para pessoas de até ${idade.toFixed(0)} anos e de gênero ${genero}, forneça a classificação indicativa, o gênero do jogo, e um resumo de sua história e jogabilidade.`
 
     fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -50,7 +50,7 @@ export default function App() {
       .then(response => response.json())
       .then((data) => {
         console.log(data.choices[0].message.content);
-        setTravel(data.choices[0].message.content)
+        setJogo(data.choices[0].message.content)
       })
       .catch((error) => {
         console.log(error);
@@ -64,45 +64,45 @@ export default function App() {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" translucent={true} backgroundColor="#F1F1F1" />
-      <Text style={styles.heading}>Viaja AI</Text>
+      <Text style={styles.heading}>Recomendação de jogos</Text>
 
       <View style={styles.form}>
-        <Text style={styles.label}>Cidade destino</Text>
+        <Text style={styles.label}>Gênero de jogo preferido</Text>
         <TextInput
-          placeholder="Ex: Suzano, SP"
+          placeholder="Ex: aventura"
           style={styles.input}
-          value={city}
-          onChangeText={(text) => setCity(text)}
+          value={genero}
+          onChangeText={(text) => setGenero(text)}
         />
 
-        <Text style={styles.label}>Tempo de estadia: <Text style={styles.days}> {days.toFixed(0)} </Text> dias</Text>
+        <Text style={styles.label}>Faixa etária: <Text style={styles.idade}> {idade.toFixed(0)} </Text> anos</Text>
         <Slider
-          minimumValue={1}
-          maximumValue={7}
+          minimumValue={10}
+          maximumValue={18}
           minimumTrackTintColor="#009688"
           maximumTrackTintColor="#000000"
-          value={days}
-          onValueChange={(value) => setDays(value)}
+          value={idade}
+          onValueChange={(value) => setIdade(value)}
         />
       </View>
 
       <Pressable style={styles.button} onPress={handleGenerate}>
-        <Text style={styles.buttonText}>Gerar roteiro</Text>
-        <MaterialIcons name="travel-explore" size={24} color="#FFF" />
+        <Text style={styles.buttonText}>Gerar recomendação</Text>
+        <MaterialIcons name="videogame-asset" size={24} color="#FFF" />
       </Pressable>
 
       <ScrollView contentContainerStyle={{ paddingBottom: 24, marginTop: 4, }} style={styles.containerScroll} showsVerticalScrollIndicator={false} >
         {loading && (
           <View style={styles.content}>
-            <Text style={styles.title}>Carregando roteiro...</Text>
+            <Text style={styles.title}>Carregando recomendação...</Text>
             <ActivityIndicator color="#000" size="large" />
           </View>
         )}
 
-        {travel && (
+        {jogo && (
           <View style={styles.content}>
-            <Text style={styles.title}>Roteiro da viagem 👇</Text>
-            <Text style={{ lineHeight: 24, }}>{travel}</Text>
+            <Text style={styles.title}>Jogo encontrado 👇</Text>
+            <Text style={{ lineHeight: 24, }}>{jogo}</Text>
           </View>
         )}
       </ScrollView>
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 16,
   },
-  days: {
+  idade: {
     backgroundColor: '#F1f1f1'
   },
   button: {
